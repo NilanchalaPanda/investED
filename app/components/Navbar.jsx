@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { MenuIcon } from "lucide-react";
+import { CircleX, MenuIcon } from "lucide-react";
 import Link from "next/link";
 
 function Navbar() {
   const [isSignedIn, setIsSignedIn] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   const loggedInItems = [
     {
@@ -26,45 +27,72 @@ function Navbar() {
     },
   ];
 
-  const handleNav = () => {};
+  const handleNav = () => {
+    setIsNavOpen(!isNavOpen);
+  };
 
   return (
-    <section className="p-4 bg-white flex justify-between items-center lg:px-20 lg:py-6">
-      {/* LOGO */}
-      <div>
+    <section>
+      <div className="flex justify-between py-6 px-4 lg:px-20 bg-slate-200">
+        {/* LOGO */}
         <h1>InvestED</h1>
+
+        {/* NAVIGATION */}
+        <nav className="hidden lg:flex lg:gap-x-5">
+          <ul className="flex gap-x-5">
+            {isSignedIn ? (
+              loggedInItems.map((item) => (
+                <li key={item.path}>
+                  <Link href={item.path}>{item.name}</Link>
+                </li>
+              ))
+            ) : (
+              <>
+                <li>About Us</li>
+                <li>How we Work</li>
+                <li>Sign In</li>
+                <li>Sign Up</li>
+              </>
+            )}
+            {/* LOGOUT BUTTON */}
+            {isSignedIn && <button>Logout</button>}
+          </ul>
+        </nav>
+        {/* HAMBURGER ICON */}
+        <div onClick={handleNav} className="block lg:hidden">
+          {isNavOpen ? (
+            <MenuIcon onClick={handleNav} />
+          ) : (
+            <CircleX onClick={handleNav} />
+          )}
+        </div>
       </div>
 
-      {/* NAVLINKS */}
-      <div>
-        {/* DESKTOP NAVBAR */}
-        <nav className="hidden lg:block">
+      {/* MOBILE NAVIGATION */}
+      <nav
+        className={`fixed flex justify-center font-semibold text-3xl w-[100%] h-[100%] lg:hidden ${
+          !isNavOpen ? "block" : "hidden"
+        }`}
+      >
+        <ul className="flex flex-col pt-20 items-center bg-slate-200 w-full gap-y-7">
           {isSignedIn ? (
-            <div className="flex gap-x-8">
-              <ul className="flex gap-x-7">
-                {loggedInItems?.map((item) => (
-                  <Link  href={item.path} key={item.name}>
-                    {item.name}
-                  </Link>
-                ))}
-              </ul>
-              <button type="button">Logout</button>
-            </div>
+            loggedInItems.map((item) => (
+              <li key={item.path}>
+                <Link href={item.path}>{item.name}</Link>
+              </li>
+            ))
           ) : (
             <>
-              <button>SignIn</button>
-              <button>SignUp</button>
+              <li>About Us</li>
+              <li>How we Work</li>
+              <li>Sign In</li>
+              <li>Sign Up</li>
             </>
           )}
-        </nav>
-
-        {/* MOBILE NAVBAR */}
-        <div onClick={handleNav} className="block md:hidden">
-          <MenuIcon className="text-black" size={30} />
-        </div>
-
-        {/* MOBILE NAVLINKS */}
-      </div>
+          {/* LOGOUT BUTTON */}
+          {isSignedIn && <button>Logout</button>}
+        </ul>
+      </nav>
     </section>
   );
 }
